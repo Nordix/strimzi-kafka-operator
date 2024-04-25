@@ -13,6 +13,8 @@ import io.strimzi.api.kafka.model.kafka.KafkaResources;
 import io.strimzi.api.kafka.model.kafka.KafkaStatus;
 import io.strimzi.api.kafka.model.kafka.Storage;
 import io.strimzi.api.kafka.model.podset.StrimziPodSet;
+import io.strimzi.certs.CertAndKey;
+import io.strimzi.certs.CertManager;
 import io.strimzi.operator.cluster.ClusterOperatorConfig;
 import io.strimzi.operator.cluster.PlatformFeaturesAvailability;
 import io.strimzi.operator.cluster.model.CertUtils;
@@ -42,16 +44,21 @@ import io.strimzi.operator.common.Reconciliation;
 import io.strimzi.operator.common.ReconciliationLogger;
 import io.strimzi.operator.common.Util;
 import io.strimzi.operator.common.auth.PemTrustSet;
+import io.strimzi.operator.common.auth.Pkcs12AuthIdentity;
 import io.strimzi.operator.common.auth.TlsIdentitySet;
 import io.strimzi.operator.common.auth.TlsPemIdentity;
 import io.strimzi.operator.common.auth.TlsPkcs12Identity;
 import io.strimzi.operator.common.model.Ca;
 import io.strimzi.operator.common.model.Labels;
+import io.strimzi.operator.common.model.PasswordGenerator;
 import io.strimzi.operator.common.operator.resource.ReconcileResult;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +123,47 @@ public class ZooKeeperReconciler {
     private TlsPkcs12Identity tlsPkcs12Identity;
 
     private final boolean isKRaftMigrationRollback;
+    
+    private CertManager certManager;
+
+    private PasswordGenerator passwordGenerator;
+    
+    /**
+     * Constructs the ZooKeeper reconciler
+     *
+     * @param reconciliation            Reconciliation marker
+     * @param vertx                     Vert.x instance
+     * @param config                    Cluster Operator Configuration
+     * @param supplier                  Supplier with Kubernetes Resource Operators
+     * @param pfa                       PlatformFeaturesAvailability describing the environment we run in
+     * @param kafkaAssembly             The Kafka custom resource
+     * @param versionChange             Description of Kafka upgrade / downgrade state
+     * @param currentReplicas           The current number of replicas
+     * @param oldStorage                The storage configuration of the current cluster (null if it does not exist yet)
+     * @param clusterCa                 The Cluster CA instance
+     * @param isKRaftMigrationRollback  If a KRaft migration rollback is going on
+     * @param certManager               hjkh
+     * @param passwordGenerator         nm,nm,
+     */
+    public ZooKeeperReconciler(
+            Reconciliation reconciliation,
+            Vertx vertx,
+            ClusterOperatorConfig config,
+            ResourceOperatorSupplier supplier,
+            PlatformFeaturesAvailability pfa,
+            Kafka kafkaAssembly,
+            KafkaVersionChange versionChange,
+            Storage oldStorage,
+            int currentReplicas,
+            ClusterCa clusterCa,
+            boolean isKRaftMigrationRollback,
+            CertManager certManager,
+            PasswordGenerator passwordGenerator
+    ) {
+        this(reconciliation, vertx, config, supplier, pfa, kafkaAssembly, versionChange, oldStorage, currentReplicas, clusterCa, isKRaftMigrationRollback);
+        this.certManager = certManager;
+        this.passwordGenerator = passwordGenerator;
+    }
 
     /**
      * Constructs the ZooKeeper reconciler
@@ -236,13 +284,74 @@ public class ZooKeeperReconciler {
     protected Future<Void> initClientAuthenticationCertificates() {
         return Future.join(
                 ReconcilerUtils.clusterCaPemTrustSet(reconciliation, secretOperator),
-                ReconcilerUtils.coClientAuthIdentity(reconciliation, secretOperator)
+                ReconcilerUtils.coClientAuthIdentity(reconciliation, secretOperator),
+                ReconcilerUtils.hasP12(reconciliation, secretOperator)
         ).onSuccess(result -> {
             PemTrustSet pemTrustSet = result.resultAt(0);
             TlsIdentitySet tlsIdentitySet = result.resultAt(1);
             this.tlsPemIdentity = new TlsPemIdentity(pemTrustSet, tlsIdentitySet.pemAuthIdentity());
-            this.tlsPkcs12Identity = new TlsPkcs12Identity(pemTrustSet, tlsIdentitySet.pkcs12AuthIdentity());
+            LOGGER.infoOp("eeimmis Has p12? " + result.resultAt(2));
+            if (!(boolean) result.resultAt(2)) {
+                try {
+                    LOGGER.infoOp("eeimmis creating  ");
+                    CertAndKey keyAndCert = addKeyAndCertToKeyStore("cluster-operator", this.tlsPemIdentity.pemAuthIdentity().privateKeyAsPemBytes(), this.tlsPemIdentity.pemAuthIdentity().certificateChainAsPemBytes());
+                    LOGGER.infoOp("eeimmis created  " + keyAndCert);
+                    LOGGER.infoOp("eeimmis created  " + keyAndCert.key());
+                    LOGGER.infoOp("eeimmis created  " + keyAndCert.keyStore());
+                    LOGGER.infoOp("eeimmis created  " + keyAndCert.trustStore());
+                    LOGGER.infoOp("eeimmis created  " + keyAndCert.storePassword());
+
+                    Pkcs12AuthIdentity pk12 = new Pkcs12AuthIdentity(keyAndCert.keyStore(), keyAndCert.storePassword());
+                    this.tlsPkcs12Identity = new TlsPkcs12Identity(pemTrustSet, pk12);
+                    LOGGER.infoOp("eeimmis set  " + tlsPkcs12Identity);
+                    LOGGER.infoOp("eeimmis set  " + tlsPkcs12Identity.pkcs12AuthIdentity());
+                    LOGGER.infoOp("eeimmis set  " + tlsPkcs12Identity.pkcs12AuthIdentity().keystore());
+                    LOGGER.infoOp("eeimmis set  " + tlsPkcs12Identity.pkcs12AuthIdentity().password());
+                    
+                    //zkTlsPkcs12Identity.pkcs12AuthIdentity().keystore()
+
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else {
+                LOGGER.infoOp("eeimmis else  ");
+                this.tlsPkcs12Identity = new TlsPkcs12Identity(pemTrustSet, tlsIdentitySet.pkcs12AuthIdentity());
+            }
         }).mapEmpty();
+    }
+    
+    /**
+     * retirn d
+     * @param alias ddd 
+     * @param key sdfsd
+     * @param cert sfsd
+     * @return sdfsd
+     * @throws IOException
+     */
+    private CertAndKey addKeyAndCertToKeyStore(String alias, byte[] key, byte[] cert) throws IOException {
+        File keyFile = Files.createTempFile("tls", "key").toFile();
+        File certFile = Files.createTempFile("tls", "cert").toFile();
+        File keyStoreFile = Files.createTempFile("tls", "p12").toFile();
+
+        Files.write(keyFile.toPath(), key);
+        Files.write(certFile.toPath(), cert);
+
+        String keyStorePassword = passwordGenerator.generate();
+        certManager.addKeyAndCertToKeyStore(keyFile, certFile, alias, keyStoreFile, keyStorePassword);
+
+        CertAndKey result = new CertAndKey(
+                Files.readAllBytes(keyFile.toPath()),
+                Files.readAllBytes(certFile.toPath()),
+                null,
+                Files.readAllBytes(keyStoreFile.toPath()),
+                keyStorePassword);
+
+//        delete(reconciliation, keyFile);
+//        delete(reconciliation, certFile);
+//        delete(reconciliation, keyStoreFile);
+
+        return result;
     }
 
     /**
@@ -437,6 +546,9 @@ public class ZooKeeperReconciler {
      * @return      Completes when the Secret was successfully created or updated
      */
     protected Future<Void> certificateSecret(Clock clock) {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         return secretOperator.getAsync(reconciliation.namespace(), KafkaResources.zookeeperSecretName(reconciliation.name()))
                 .compose(oldSecret -> {
                     return secretOperator
@@ -542,8 +654,10 @@ public class ZooKeeperReconciler {
      */
     public Map<String, String> zkPodSetPodAnnotations(int podNum) {
         Map<String, String> podAnnotations = new LinkedHashMap<>((int) Math.ceil(podNum / 0.75));
-        podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_CERT_GENERATION, String.valueOf(this.clusterCa.caCertGeneration()));
-        podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(this.clusterCa.caKeyGeneration()));
+        if (this.clusterCa.isGenerateSecrets()) {
+            podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_CERT_GENERATION, String.valueOf(this.clusterCa.caCertGeneration()));
+            podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(this.clusterCa.caKeyGeneration()));
+        }
         podAnnotations.put(Annotations.ANNO_STRIMZI_LOGGING_HASH, loggingHash);
         podAnnotations.put(ANNO_STRIMZI_SERVER_CERT_HASH, zkCertificateHash.get(podNum));
         return podAnnotations;

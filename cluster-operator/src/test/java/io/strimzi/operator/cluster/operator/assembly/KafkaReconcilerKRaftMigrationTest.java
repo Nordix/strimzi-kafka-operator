@@ -143,6 +143,7 @@ public class KafkaReconcilerKRaftMigrationTest {
             365,
             30,
             true,
+            true,
             null
     );
 

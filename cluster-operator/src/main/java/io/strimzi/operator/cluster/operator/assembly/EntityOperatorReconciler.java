@@ -354,6 +354,9 @@ public class EntityOperatorReconciler {
      */
     @SuppressWarnings("deprecation")
     protected Future<Void> deleteOldEntityOperatorSecret() {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         return secretOperator
                 .reconcile(reconciliation, reconciliation.namespace(), KafkaResources.entityOperatorSecretName(reconciliation.name()), null)
                 .map((Void) null);
@@ -368,6 +371,9 @@ public class EntityOperatorReconciler {
      * @return      Future which completes when the reconciliation is done
      */
     protected Future<Void> topicOperatorSecret(Clock clock) {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         if (entityOperator != null && entityOperator.topicOperator() != null) {
             return secretOperator.getAsync(reconciliation.namespace(), KafkaResources.entityTopicOperatorSecretName(reconciliation.name()))
                     .compose(oldSecret -> {
@@ -401,6 +407,9 @@ public class EntityOperatorReconciler {
      * @return      Future which completes when the reconciliation is done
      */
     protected Future<Void> userOperatorSecret(Clock clock) {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         if (entityOperator != null && entityOperator.userOperator() != null) {
             return secretOperator.getAsync(reconciliation.namespace(), KafkaResources.entityUserOperatorSecretName(reconciliation.name()))
                     .compose(oldSecret -> {
@@ -451,10 +460,12 @@ public class EntityOperatorReconciler {
     protected Future<Void> deployment(boolean isOpenShift, ImagePullPolicy imagePullPolicy, List<LocalObjectReference> imagePullSecrets) {
         if (entityOperator != null) {
             Deployment deployment = entityOperator.generateDeployment(isOpenShift, imagePullPolicy, imagePullSecrets);
-            int caCertGeneration = clusterCa.caCertGeneration();
-            Annotations.annotations(deployment.getSpec().getTemplate()).put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_CERT_GENERATION, String.valueOf(caCertGeneration));
-            int caKeyGeneration = clusterCa.caKeyGeneration();
-            Annotations.annotations(deployment.getSpec().getTemplate()).put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(caKeyGeneration));
+            if (clusterCa.isGenerateSecrets()) {
+                int caCertGeneration = clusterCa.caCertGeneration();
+                Annotations.annotations(deployment.getSpec().getTemplate()).put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_CERT_GENERATION, String.valueOf(caCertGeneration));
+                int caKeyGeneration = clusterCa.caKeyGeneration();
+                Annotations.annotations(deployment.getSpec().getTemplate()).put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(caKeyGeneration));
+            }
             
             if (entityOperator.topicOperator() != null && isCruiseControlEnabled) {
                 Annotations.annotations(deployment.getSpec().getTemplate()).put(Annotations.ANNO_STRIMZI_AUTH_HASH, ccApiSecretHash);

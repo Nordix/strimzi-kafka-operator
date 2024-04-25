@@ -97,6 +97,7 @@ public class KafkaReconcilerStatusTest {
             365,
             30,
             true,
+            true,
             null
     );
     private final static Kafka KAFKA = new KafkaBuilder()

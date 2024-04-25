@@ -209,6 +209,7 @@ public class KafkaAssemblyOperatorWithKRaftTest {
             365,
             30,
             true,
+            true,
             null
     );
 

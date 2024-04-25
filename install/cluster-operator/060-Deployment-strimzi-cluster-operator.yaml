@@ -27,10 +27,12 @@ spec:
             name: strimzi-cluster-operator
       containers:
         - name: strimzi-cluster-operator
-          image: quay.io/strimzi/operator:0.40.0
+          image: michaelmorrisest/strimzi/operator:0.40.0
           ports:
             - containerPort: 8080
               name: http
+            - containerPort: 5005
+              name: debug
           args:
             - /opt/strimzi/bin/cluster_operator_run.sh
           volumeMounts:

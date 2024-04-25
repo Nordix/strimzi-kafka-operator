@@ -227,7 +227,6 @@ public class CaReconciler {
         String clusterCaKeyName = AbstractModel.clusterCaKeySecretName(reconciliation.name());
         String clientsCaCertName = KafkaResources.clientsCaCertificateSecretName(reconciliation.name());
         String clientsCaKeyName = KafkaResources.clientsCaKeySecretName(reconciliation.name());
-
         return secretOperator.listAsync(reconciliation.namespace(), Labels.EMPTY.withStrimziKind(reconciliation.kind()).withStrimziCluster(reconciliation.name()))
                 .compose(clusterSecrets -> vertx.executeBlocking(() -> {
                     Secret clusterCaCertSecret = null;
@@ -251,6 +250,7 @@ public class CaReconciler {
                         }
                     }
 
+                    
                     // When we are not supposed to generate the CA, but it does not exist, we should just throw an error
                     checkCustomCaSecret(clusterCaConfig, clusterCaCertSecret, clusterCaKeySecret, "Cluster CA");
 
@@ -258,14 +258,17 @@ public class CaReconciler {
                             clusterCaKeySecret,
                             ModelUtils.getCertificateValidity(clusterCaConfig),
                             ModelUtils.getRenewalDays(clusterCaConfig),
-                            clusterCaConfig == null || clusterCaConfig.isGenerateCertificateAuthority(), clusterCaConfig != null ? clusterCaConfig.getCertificateExpirationPolicy() : null);
+                            clusterCaConfig == null || clusterCaConfig.isGenerateCertificateAuthority(),
+                            clusterCaConfig == null || clusterCaConfig.isGenerateSecrets(),
+                            clusterCaConfig != null ? clusterCaConfig.getCertificateExpirationPolicy() : null);
                     clusterCa.initCaSecrets(clusterSecrets);
+                        
                     clusterCa.createRenewOrReplace(
                             reconciliation.namespace(), reconciliation.name(), caLabels,
                             clusterCaCertLabels, clusterCaCertAnnotations,
                             clusterCaConfig != null && !clusterCaConfig.isGenerateSecretOwnerReference() ? null : ownerRef,
                             Util.isMaintenanceTimeWindowsSatisfied(reconciliation, maintenanceWindows, clock.instant()));
-
+    
                     // When we are not supposed to generate the CA, but it does not exist, we should just throw an error
                     checkCustomCaSecret(clientsCaConfig, clientsCaCertSecret, clientsCaKeySecret, "Clients CA");
 
@@ -276,27 +279,29 @@ public class CaReconciler {
                             ModelUtils.getCertificateValidity(clientsCaConfig),
                             ModelUtils.getRenewalDays(clientsCaConfig),
                             clientsCaConfig == null || clientsCaConfig.isGenerateCertificateAuthority(),
+                            clientsCaConfig == null || clientsCaConfig.isGenerateSecrets(),
                             clientsCaConfig != null ? clientsCaConfig.getCertificateExpirationPolicy() : null);
                     clientsCa.initBrokerSecret(brokersSecret);
+                        
                     clientsCa.createRenewOrReplace(reconciliation.namespace(), reconciliation.name(),
                             caLabels, Map.of(), Map.of(),
                             clientsCaConfig != null && !clientsCaConfig.isGenerateSecretOwnerReference() ? null : ownerRef,
                             Util.isMaintenanceTimeWindowsSatisfied(reconciliation, maintenanceWindows, clock.instant()));
-
                     return null;
                 }))
                 .compose(i -> {
+
                     Promise<Void> caUpdatePromise = Promise.promise();
 
                     List<Future<ReconcileResult<Secret>>> secretReconciliations = new ArrayList<>(2);
 
-                    if (clusterCaConfig == null || clusterCaConfig.isGenerateCertificateAuthority())   {
+                    if (clusterCaConfig == null || (clusterCaConfig.isGenerateCertificateAuthority() && clusterCaConfig.isGenerateSecrets()))   {
                         Future<ReconcileResult<Secret>> clusterSecretReconciliation = secretOperator.reconcile(reconciliation, reconciliation.namespace(), clusterCaCertName, clusterCa.caCertSecret())
                                 .compose(ignored -> secretOperator.reconcile(reconciliation, reconciliation.namespace(), clusterCaKeyName, clusterCa.caKeySecret()));
                         secretReconciliations.add(clusterSecretReconciliation);
                     }
 
-                    if (clientsCaConfig == null || clientsCaConfig.isGenerateCertificateAuthority())   {
+                    if (clientsCaConfig == null || (clientsCaConfig.isGenerateCertificateAuthority() && clusterCaConfig.isGenerateSecrets()))   {
                         Future<ReconcileResult<Secret>> clientsSecretReconciliation = secretOperator.reconcile(reconciliation, reconciliation.namespace(), clientsCaCertName, clientsCa.caCertSecret())
                                 .compose(ignored -> secretOperator.reconcile(reconciliation, reconciliation.namespace(), clientsCaKeyName, clientsCa.caKeySecret()));
                         secretReconciliations.add(clientsSecretReconciliation);
@@ -340,11 +345,15 @@ public class CaReconciler {
                        That time is used for checking maintenance windows
      */
     Future<Void> reconcileClusterOperatorSecret(Clock clock) {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         coSecret = clusterCa.clusterOperatorSecret();
         if (coSecret != null && this.isClusterCaNeedFullTrust) {
             LOGGER.warnCr(reconciliation, "Cluster CA needs to be fully trusted across the cluster, keeping current CO secret and certs");
             return Future.succeededFuture();
         }
+        // Can we/should we generate p12 here?
         coSecret = CertUtils.buildTrustedCertificateSecret(
                 reconciliation,
                 clusterCa,
@@ -368,6 +377,9 @@ public class CaReconciler {
      * due to a new CA key. It is not necessary when the CA certificate is replace while retaining the existing key.
      */
     Future<Void> rollingUpdateForNewCaKey() {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         RestartReasons podRollReasons = RestartReasons.empty();
 
         // cluster CA needs to be fully trusted
@@ -593,6 +605,9 @@ public class CaReconciler {
      * corresponding CA private key.
      */
     Future<Void> maybeRemoveOldClusterCaCertificates() {
+        if (!clusterCa.isGenerateSecrets()) {
+            return Future.succeededFuture();
+        }
         // if the new CA certificate is used to sign all server certificates
         if (isClusterCaFullyUsed) {
             LOGGER.debugCr(reconciliation, "Maybe there are old cluster CA certificates to remove");

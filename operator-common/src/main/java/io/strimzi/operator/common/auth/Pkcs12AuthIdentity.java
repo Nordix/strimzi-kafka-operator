@@ -37,6 +37,16 @@ public class Pkcs12AuthIdentity {
     public static Pkcs12AuthIdentity clusterOperator(Secret secret) {
         return new Pkcs12AuthIdentity(secret, "cluster-operator");
     }
+    
+    /**
+     * bbbb
+     * @param keyStore bb
+     * @param password  bb
+     */
+    public  Pkcs12AuthIdentity(byte[] keyStore, String password) {
+        this.keyStore = keyStore;
+        this.password = password;
+    }
 
     /**
      * Authentication identity as a KeyStore file for clients to use during TlS connections.

@@ -699,25 +699,40 @@ public class KafkaReconciler {
      * @return      Completes when the Secret was successfully created or updated
      */
     protected Future<Void> certificateSecret(Clock clock) {
-        return secretOperator.getAsync(reconciliation.namespace(), KafkaResources.kafkaSecretName(reconciliation.name()))
-                .compose(oldSecret -> {
-                    return secretOperator
-                            .reconcile(reconciliation, reconciliation.namespace(), KafkaResources.kafkaSecretName(reconciliation.name()),
-                                    kafka.generateCertificatesSecret(clusterCa, clientsCa, listenerReconciliationResults.bootstrapDnsNames, listenerReconciliationResults.brokerDnsNames, Util.isMaintenanceTimeWindowsSatisfied(reconciliation, maintenanceWindows, clock.instant())))
-                            .compose(patchResult -> {
-                                if (patchResult != null) {
-                                    for (NodeRef node : kafka.nodes()) {
-                                        kafkaServerCertificateHash.put(
-                                                node.nodeId(),
-                                                CertUtils.getCertificateThumbprint(patchResult.resource(),
-                                                        Ca.SecretEntry.CRT.asKey(node.podName())
-                                                ));
+        if (this.clusterCa.isGenerateSecrets()) {
+            return secretOperator.getAsync(reconciliation.namespace(), KafkaResources.kafkaSecretName(reconciliation.name()))
+                    .compose(oldSecret -> {
+                        return secretOperator
+                                .reconcile(reconciliation, reconciliation.namespace(), KafkaResources.kafkaSecretName(reconciliation.name()),
+                                        kafka.generateCertificatesSecret(clusterCa, clientsCa, listenerReconciliationResults.bootstrapDnsNames, listenerReconciliationResults.brokerDnsNames, Util.isMaintenanceTimeWindowsSatisfied(reconciliation, maintenanceWindows, clock.instant())))
+                                .compose(patchResult -> {
+                                    if (patchResult != null) {
+                                        for (NodeRef node : kafka.nodes()) {
+                                            kafkaServerCertificateHash.put(
+                                                    node.nodeId(),
+                                                    CertUtils.getCertificateThumbprint(patchResult.resource(),
+                                                            Ca.SecretEntry.CRT.asKey(node.podName())
+                                                    ));
+                                        }
                                     }
-                                }
+    
+                                    return Future.succeededFuture();
+                                });
+                    });
+        } else {
+            return secretOperator
+                    .getAsync(reconciliation.namespace(), KafkaResources.kafkaSecretName(reconciliation.name()))
+                    .compose(oldSecret -> {
+                        if (oldSecret != null) {
+                            for (NodeRef node : kafka.nodes()) {
+                                kafkaServerCertificateHash.put(node.nodeId(), CertUtils
+                                        .getCertificateThumbprint(oldSecret, Ca.SecretEntry.CRT.asKey(node.podName())));
+                            }
+                        }
 
-                                return Future.succeededFuture();
-                            });
-                });
+                        return Future.succeededFuture();
+                    });
+        }
     }
 
     /**
@@ -751,7 +766,9 @@ public class KafkaReconciler {
     private Map<String, String> podSetPodAnnotations(int nodeId) {
         Map<String, String> podAnnotations = new LinkedHashMap<>(9);
         podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_CERT_GENERATION, String.valueOf(this.clusterCa.caCertGeneration()));
-        podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(this.clusterCa.caKeyGeneration()));
+        if (this.clusterCa.isGenerateSecrets()) {
+            podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLUSTER_CA_KEY_GENERATION, String.valueOf(this.clusterCa.caKeyGeneration()));
+        }
         podAnnotations.put(Ca.ANNO_STRIMZI_IO_CLIENTS_CA_CERT_GENERATION, String.valueOf(this.clientsCa.caCertGeneration()));
         podAnnotations.put(Annotations.ANNO_STRIMZI_LOGGING_APPENDERS_HASH, loggingHash);
         podAnnotations.put(KafkaCluster.ANNO_STRIMZI_BROKER_CONFIGURATION_HASH, brokerConfigurationHash.get(nodeId));

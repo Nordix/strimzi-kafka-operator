@@ -235,6 +235,7 @@ public class KafkaUserModel {
                 validityDays,
                 renewalDays,
                 false,
+                true,
                 null);
         this.caCert = clientsCa.currentCaCertBase64();
 

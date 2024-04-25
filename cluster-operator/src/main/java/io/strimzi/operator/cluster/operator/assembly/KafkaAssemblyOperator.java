@@ -547,7 +547,9 @@ public class KafkaAssemblyOperator extends AbstractAssemblyOperator<KubernetesCl
                                 oldStorage,
                                 currentReplicas,
                                 clusterCa,
-                                this.kafkaMetadataStateManager.isRollingBack()
+                                this.kafkaMetadataStateManager.isRollingBack(),
+                                certManager,
+                                passwordGenerator
                         );
 
                         return Future.succeededFuture(reconciler);

@@ -23,6 +23,10 @@ JAVA_OPTS="${JAVA_OPTS} $(get_gc_opts)"
 # Exit when we run out of heap memory
 JAVA_OPTS="${JAVA_OPTS} -XX:+ExitOnOutOfMemoryError"
 
+if [ "${JAVA_MAIN}" == "io.strimzi.operator.cluster.Main" ]; then
+  JAVA_OPTS="${JAVA_OPTS} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+fi
+
 # Default memory options used when the user didn't configured any of these options, we set the defaults
 if [[ "$JAVA_OPTS" != *"MinRAMPercentage"* && "$JAVA_OPTS" != *"MaxRAMPercentage"* ]]; then
   JAVA_OPTS="${JAVA_OPTS} -XX:MinRAMPercentage=15 -XX:MaxRAMPercentage=20"

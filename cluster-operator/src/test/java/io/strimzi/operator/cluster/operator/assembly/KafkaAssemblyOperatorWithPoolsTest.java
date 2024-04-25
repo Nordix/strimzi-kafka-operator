@@ -218,6 +218,7 @@ public class KafkaAssemblyOperatorWithPoolsTest {
             365,
             30,
             true,
+            true,
             null
     );
 

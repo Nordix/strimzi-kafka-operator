@@ -444,7 +444,7 @@ public class KafkaClusterWithKRaftTest {
     public void testGenerateBrokerSecretExternalWithManyDNS() throws CertificateParsingException {
         ClusterCa clusterCa = new ClusterCa(Reconciliation.DUMMY_RECONCILIATION, new OpenSslCertManager(), new PasswordGenerator(10, "a", "a"), CLUSTER_NAME, null, null);
         clusterCa.createRenewOrReplace(NAMESPACE, CLUSTER_NAME, emptyMap(), emptyMap(), emptyMap(), null, true);
-        ClientsCa clientsCa = new ClientsCa(Reconciliation.DUMMY_RECONCILIATION, new OpenSslCertManager(), new PasswordGenerator(10, "a", "a"), null, null, null, null, 365, 30, true, CertificateExpirationPolicy.RENEW_CERTIFICATE);
+        ClientsCa clientsCa = new ClientsCa(Reconciliation.DUMMY_RECONCILIATION, new OpenSslCertManager(), new PasswordGenerator(10, "a", "a"), null, null, null, null, 365, 30, true, true, CertificateExpirationPolicy.RENEW_CERTIFICATE);
         clientsCa.createRenewOrReplace(NAMESPACE, CLUSTER_NAME, emptyMap(), emptyMap(), emptyMap(), null, true);
 
         KafkaCluster kc = KafkaCluster.fromCrd(

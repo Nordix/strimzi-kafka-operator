@@ -167,6 +167,7 @@ public class KafkaAssemblyOperatorPodSetTest {
             365,
             30,
             true,
+            true,
             null
     );
 

@@ -24,7 +24,7 @@ import java.util.Map;
         builderPackage = Constants.FABRIC8_KUBERNETES_API
 )
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@JsonPropertyOrder({ "generateCertificateAuthority", "generateSecretOwnerReference", "validityDays",
+@JsonPropertyOrder({ "generateCertificateAuthority", "generateSecrets", "generateSecretOwnerReference", "validityDays",
     "renewalDays", "certificateExpirationPolicy" })
 @EqualsAndHashCode
 @ToString
@@ -35,6 +35,7 @@ public class CertificateAuthority implements UnknownPropertyPreserving, Serializ
     private int validityDays;
     private boolean generateCertificateAuthority = true;
     private boolean generateSecretOwnerReference = true;
+    private boolean generateSecrets = true;
     private int renewalDays;
     private CertificateExpirationPolicy certificateExpirationPolicy;
 
@@ -64,6 +65,18 @@ public class CertificateAuthority implements UnknownPropertyPreserving, Serializ
 
     public void setGenerateCertificateAuthority(boolean generateCertificateAuthority) {
         this.generateCertificateAuthority = generateCertificateAuthority;
+    }
+    
+    @Description("If true then secrets will be generated automatically for TLS certs. " +
+            "Otherwise the user will need to create the relevant secrets. " +
+            "Default is true.")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public boolean isGenerateSecrets() {
+        return generateSecrets;
+    }
+
+    public void setGenerateSecrets(boolean generateSecrets) {
+        this.generateSecrets = generateSecrets;
     }
 
     @Description("If `true`, the Cluster and Client CA Secrets are configured with the `ownerReference` set to the `Kafka` resource. " +

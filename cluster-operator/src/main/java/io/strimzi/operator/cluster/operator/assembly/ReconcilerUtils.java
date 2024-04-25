@@ -142,7 +142,6 @@ public class ReconcilerUtils {
         return coClientAuthIdentitySecret(reconciliation, secretOperator)
                 .map(secret -> new TlsIdentitySet(PemAuthIdentity.clusterOperator(secret), Pkcs12AuthIdentity.clusterOperator(secret)));
     }
-
     /**
      * Utility method which helps to get the Kubernetes Secret that contains the Cluster Operator identity to use for client authentication
      * when bootstrapping different clients used during the reconciliation.
@@ -154,6 +153,16 @@ public class ReconcilerUtils {
      */
     private static Future<Secret> coClientAuthIdentitySecret(Reconciliation reconciliation, SecretOperator secretOperator) {
         return getSecret(secretOperator, reconciliation.namespace(), KafkaResources.secretName(reconciliation.name()));
+    }
+    
+    /**
+     * asdasdasd
+     * @param reconciliation asdasd
+     * @param secretOperator asdasd
+     * @return asdad
+     */
+    public static Future<Boolean> hasP12(Reconciliation reconciliation, SecretOperator secretOperator) {
+        return getSecret(secretOperator, reconciliation.namespace(), KafkaResources.secretName(reconciliation.name())).map(secret -> secret.getData().containsKey(".p12"));
     }
 
     /**
@@ -201,6 +210,7 @@ public class ReconcilerUtils {
         }
 
         for (Ca ca: cas) {
+//            if (!ca.isDisabledCa()) {
             if (ca.certRenewed()) {
                 restartReasons.add(RestartReason.CA_CERT_RENEWED, ca + " certificate renewal");
             }
@@ -210,6 +220,7 @@ public class ReconcilerUtils {
             if (!isPodCaCertUpToDate(pod, ca)) {
                 restartReasons.add(RestartReason.CA_CERT_HAS_OLD_GENERATION, "Pod has old " + ca + " certificate generation");
             }
+  //          }
         }
 
         if (fsResizingRestartRequest.contains(pod.getMetadata().getName()))   {

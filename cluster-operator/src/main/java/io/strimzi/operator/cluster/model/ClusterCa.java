@@ -64,7 +64,7 @@ public class ClusterCa extends Ca {
      * @param caKeySecret           Name of the CA private key secret
      */
     public ClusterCa(Reconciliation reconciliation, CertManager certManager, PasswordGenerator passwordGenerator, String clusterName, Secret caCertSecret, Secret caKeySecret) {
-        this(reconciliation, certManager, passwordGenerator, clusterName, caCertSecret, caKeySecret, 365, 30, true, null);
+        this(reconciliation, certManager, passwordGenerator, clusterName, caCertSecret, caKeySecret, 365, 30, true, true, null);
     }
 
     /**
@@ -79,6 +79,7 @@ public class ClusterCa extends Ca {
      * @param validityDays          Validity days
      * @param renewalDays           Renewal days (how many days before expiration should the CA be renewed)
      * @param generateCa            Flag indicating if Strimzi CA should be generated or custom CA is used
+     * @param generateSecrets       Flag indicating if Strimzi should generate secrets for TLS or the user must create them
      * @param policy                Renewal policy
      */
     public ClusterCa(Reconciliation reconciliation, CertManager certManager,
@@ -89,13 +90,14 @@ public class ClusterCa extends Ca {
                      int validityDays,
                      int renewalDays,
                      boolean generateCa,
+                     boolean generateSecrets,
                      CertificateExpirationPolicy policy) {
         super(reconciliation, certManager, passwordGenerator,
                 "cluster-ca",
                 AbstractModel.clusterCaCertSecretName(clusterName),
                 clusterCaCert,
                 AbstractModel.clusterCaKeySecretName(clusterName),
-                clusterCaKey, validityDays, renewalDays, generateCa, policy);
+                clusterCaKey, validityDays, renewalDays, generateCa, generateSecrets, policy);
         this.clusterName = clusterName;
     }
 

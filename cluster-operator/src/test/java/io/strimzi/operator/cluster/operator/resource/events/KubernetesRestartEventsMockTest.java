@@ -686,6 +686,7 @@ public class KubernetesRestartEventsMockTest {
                 365,
                 30,
                 true,
+                true,
                 null
         );
     }

@@ -169,10 +169,11 @@ public class Util {
         if (data != null) {
             return Base64.getDecoder().decode(data);
         } else {
-            throw new RuntimeException(String.format("The Secret %s/%s is missing the field %s",
-                    secret.getMetadata().getNamespace(),
-                    secret.getMetadata().getName(),
-                    field));
+            return null;
+//            throw new RuntimeException(String.format("The Secret %s/%s is missing the field %s",
+//                    secret.getMetadata().getNamespace(),
+//                    secret.getMetadata().getName(),
+//                    field));
         }
     }
 
@@ -577,6 +578,9 @@ public class Util {
      * @return New String object containing the provided byte array
      */
     public static String fromAsciiBytes(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
         return new String(bytes, StandardCharsets.US_ASCII);
     }
 
