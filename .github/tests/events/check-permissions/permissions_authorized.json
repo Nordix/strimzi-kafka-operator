@@ -1,7 +1,7 @@
 {
   "event_name": "pull_request",
   "action": "opened", 
-  "actor": "frawless",
+  "actor": "JvD-Ericsson",
   "pull_request": {
     "number": 123,
     "title": "Test authorized user",
@@ -17,7 +17,7 @@
   "repository": {
     "name": "ci-playground",
     "owner": { 
-      "login": "frawless",
+      "login": "JvD-Ericsson",
       "type": "User"
     }
   }
