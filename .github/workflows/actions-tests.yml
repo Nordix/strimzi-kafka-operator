@@ -1,4 +1,4 @@
-name: Unit & Integration tests of Actions
+name: Unit & Integration tests of Actions 
 
 on:
   pull_request:
