@@ -12,11 +12,8 @@ inputs:
   gpgSigningKey:
     description: "GPG signing key"
     required: true
-  centralUsername:
-    description: "Maven Central username"
-    required: true
-  centralPassword:
-    description: "Maven Central password"
+  artifactoryAccessToken:
+    description: "Artifactory Access Token"
     required: true
 
 runs:
@@ -49,5 +46,4 @@ runs:
         BRANCH: ${{ github.ref }}
         GPG_PASSPHRASE: ${{ inputs.gpgPassphrase }}
         GPG_SIGNING_KEY: ${{ inputs.gpgSigningKey }}
-        CENTRAL_USERNAME: ${{ inputs.centralUsername }}
-        CENTRAL_PASSWORD: ${{ inputs.centralPassword }}
+        JF_ACCESS_TOKEN: ${{ inputs.artifactoryAccessToken }}
