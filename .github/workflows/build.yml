@@ -5,6 +5,7 @@ on:
     branches:
       - "main"
       - "release-*"
+      - "allies-release*"
   pull_request:
     branches:
       - "*"
@@ -95,7 +96,7 @@ jobs:
       - test-strimzi
       - build-containers
       - build-docs
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ startsWith(github.ref, 'refs/heads/allies-release') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -103,8 +104,8 @@ jobs:
       # Required for keyless signing with GitHub OIDC
       id-token: write
     env:
-      DOCKER_REGISTRY: "quay.io"
-      DOCKER_ORG: "strimzi"
+      DOCKER_REGISTRY: "registry.nordix.org"
+      DOCKER_ORG: "allies/strimzi"
       DOCKER_TAG: "latest"
     steps:
       - uses: actions/checkout@v5
@@ -112,25 +113,25 @@ jobs:
         with:
           architectures: "amd64,arm64,ppc64le,s390x"
           runnerArch: "amd64"
-          quayUser: ${{ secrets.QUAY_USER }}
-          quayPass: ${{ secrets.QUAY_PASS }}
+          dockerUsername: ${{ secrets.DOCKER_USERNAME }}
+          dockerToken: ${{ secrets.DOCKER_TOKEN }}
 
-  # Publish Strimzi docs to the website - run only on main branch
-  publish-docs:
-    name: Publish Docs
-    needs:
-      - build-strimzi
-      - test-strimzi
-      - build-containers
-      - build-docs
-    if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/build/publish-docs
-        with:
-          artifactName: "documentation.tar"
-          websiteDeployKey: ${{ secrets.WEBSITE_DEPLOY_KEY }}
+#  # Publish Strimzi docs to the website - run only on main branch
+#  publish-docs:
+#    name: Publish Docs
+#    needs:
+#      - build-strimzi
+#      - test-strimzi
+#      - build-containers
+#      - build-docs
+#    if: ${{ github.ref == 'refs/heads/main' }}
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/build/publish-docs
+#        with:
+#          artifactName: "documentation.tar"
+#          websiteDeployKey: ${{ secrets.WEBSITE_DEPLOY_KEY }}
 
   # Deploy Strimzi Java artifacts - run only on main branch
   deploy-java:
@@ -140,7 +141,7 @@ jobs:
       - test-strimzi
       - build-containers
       - build-docs
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ startsWith(github.ref, 'refs/heads/allies-release') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -149,5 +150,5 @@ jobs:
           runnerArch: "amd64"
           gpgPassphrase: ${{ secrets.GPG_PASSPHRASE }}
           gpgSigningKey: ${{ secrets.GPG_SIGNING_KEY }}
-          centralUsername: ${{ secrets.CENTRAL_USERNAME }}
-          centralPassword: ${{ secrets.CENTRAL_PASSWORD }}
+          artifactoryUsername: ${{ secrets.ARTIFACTORY_USER }}
+          artifactoryAccessToken: ${{ secrets.JF_ACCESS_TOKEN }}

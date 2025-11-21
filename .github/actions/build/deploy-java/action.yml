@@ -12,11 +12,11 @@ inputs:
   gpgSigningKey:
     description: "GPG signing key"
     required: true
-  centralUsername:
-    description: "Maven Central username"
+  artifactoryUsername:
+    description: "Artifactory Username"
     required: true
-  centralPassword:
-    description: "Maven Central password"
+  artifactoryAccessToken:
+    description: "Artifactory Access Token"
     required: true
 
 runs:
@@ -27,6 +27,12 @@ runs:
       with:
         java-version: '17'
         distribution: 'temurin'
+
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://artifactory.nordix.org/
+        JF_ACCESS_TOKEN: ${{ inputs.artifactoryAccessToken }}
 
     - name: Restore Maven cache
       uses: actions/cache/restore@v4
@@ -49,5 +55,5 @@ runs:
         BRANCH: ${{ github.ref }}
         GPG_PASSPHRASE: ${{ inputs.gpgPassphrase }}
         GPG_SIGNING_KEY: ${{ inputs.gpgSigningKey }}
-        CENTRAL_USERNAME: ${{ inputs.centralUsername }}
-        CENTRAL_PASSWORD: ${{ inputs.centralPassword }}
+        ARTIFACTORY_USER: ${{ inputs.artifactoryUsername }}
+        JF_ACCESS_TOKEN: ${{ inputs.artifactoryAccessToken }}
