@@ -1139,7 +1139,7 @@
             </build>
         </profile>
         <profile>
-            <id>central</id>
+            <id>artifactory</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -1149,6 +1149,12 @@
                 <!--suppress UnresolvedMavenProperty -->
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
+            <distributionManagement>
+                <repository>
+                    <id>artifactory</id>
+                    <url>https://artifactory.nordix.org/artifactory/allies-mvn</url>
+                </repository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -1171,15 +1177,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>${central-publishing-maven-plugin.version}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <publishingServerId>central</publishingServerId>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
