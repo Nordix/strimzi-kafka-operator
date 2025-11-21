@@ -1021,13 +1021,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -2496,13 +2494,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -3634,13 +3630,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -4660,13 +4654,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -5396,6 +5388,8 @@ spec:
                         - ephemeral
                         - persistent-claim
                         - jbod
+                      volumeAttributesClass:
+                        type: string
                       volumes:
                         type: array
                         items:
@@ -5435,6 +5429,8 @@ spec:
                               enum:
                               - ephemeral
                               - persistent-claim
+                            volumeAttributesClass:
+                              type: string
                           required:
                           - type
                     required:
@@ -6290,13 +6286,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -6944,6 +6938,8 @@ spec:
                         enum:
                         - ephemeral
                         - persistent-claim
+                      volumeAttributesClass:
+                        type: string
                     required:
                     - type
                   config:
@@ -7716,13 +7712,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -8974,13 +8968,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -10326,13 +10318,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -11486,13 +11476,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:
@@ -12362,13 +12350,11 @@ spec:
                                   properties:
                                     medium:
                                       type: string
+                                      enum:
+                                      - Memory
                                     sizeLimit:
-                                      type: object
-                                      properties:
-                                        amount:
-                                          type: string
-                                        format:
-                                          type: string
+                                      type: string
+                                      pattern: "^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
                                 persistentVolumeClaim:
                                   type: object
                                   properties:

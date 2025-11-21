@@ -5,7 +5,7 @@
     <groupId>io.strimzi</groupId>
     <artifactId>strimzi</artifactId>
     <packaging>pom</packaging>
-    <version>0.49.0-SNAPSHOT</version>
+    <version>0.50.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -82,9 +82,9 @@
         <fasterxml.jackson-annotations.version>2.18.3</fasterxml.jackson-annotations.version>
         <fasterxml.jackson-datatype.version>2.18.3</fasterxml.jackson-datatype.version>
         <fasterxml.jackson-jaxrs.version>2.18.3</fasterxml.jackson-jaxrs.version>
-        <vertx.version>5.0.4</vertx.version>
-        <vertx-junit5.version>5.0.4</vertx-junit5.version>
-        <kafka.version>4.1.0</kafka.version>
+        <vertx.version>5.0.5</vertx.version>
+        <vertx-junit5.version>5.0.5</vertx-junit5.version>
+        <kafka.version>4.1.1</kafka.version>
         <yammer-metrics.version>2.2.0</yammer-metrics.version>
         <snappy.version>1.1.10.5</snappy.version>
         <slf4j.version>2.0.17</slf4j.version>
@@ -94,8 +94,8 @@
         <opentelemetry-alpha.version>${opentelemetry.version}-alpha</opentelemetry-alpha.version>
         <jetty.version>12.0.22</jetty.version>
         <javax-servlet.version>3.1.0</javax-servlet.version>
-        <strimzi-oauth.version>0.17.0</strimzi-oauth.version>
-        <netty.version>4.2.5.Final</netty.version>
+        <strimzi-oauth.version>0.17.1</strimzi-oauth.version>
+        <netty.version>4.2.7.Final</netty.version>
         <micrometer.version>1.14.5</micrometer.version>
         <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
         <commons-codec.version>1.13</commons-codec.version>

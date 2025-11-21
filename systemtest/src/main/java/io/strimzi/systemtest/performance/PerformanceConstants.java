@@ -10,6 +10,17 @@ package io.strimzi.systemtest.performance;
 public interface PerformanceConstants {
 
     // --------------------------------------------------------------------------------
+    // ------------------------------ COMMON OPERATOR -----------------------------------
+    // --------------------------------------------------------------------------------
+    String OPERATOR_OUT_RECONCILIATION_INTERVAL = "OUT: Reconciliation interval (ms)";
+    String OPERATOR_OUT_AVERAGE_LATENCY = "OUT: Average Latency (ms)";
+    String OPERATOR_OUT_P50_LATENCY = "OUT: P50 Latency (ms)";
+    String OPERATOR_OUT_P95_LATENCY = "OUT: P95 Latency (ms)";
+    String OPERATOR_OUT_P99_LATENCY = "OUT: P99 Latency (ms)";
+    String OPERATOR_OUT_MIN_LATENCY = "OUT: Min Latency (ms)";
+    String OPERATOR_OUT_MAX_LATENCY = "OUT: Max Latency (ms)";
+
+    // --------------------------------------------------------------------------------
     // ------------------------------ TOPIC OPERATOR ----------------------------------
     // --------------------------------------------------------------------------------
     /**
@@ -87,7 +98,6 @@ public interface PerformanceConstants {
     String TOPIC_OPERATOR_OUT_SUCCESSFUL_KAFKA_TOPICS_CREATED = "OUT: Successful KafkaTopics Created";
     String TOPIC_OPERATOR_OUT_SUCCESSFUL_KAFKA_TOPICS_CREATED_AND_MODIFIED_AND_DELETED = "OUT: Successful KafkaTopics Created and Modified and Deleted (ms)";
     String TOPIC_OPERATOR_OUT_UPDATE_TIME = "OUT: Update Time (ms)";
-    String TOPIC_OPERATOR_OUT_RECONCILIATION_INTERVAL = "OUT: Reconciliation interval (ms)";
 
     // --------------------------------------------------------------------------------
     // ------------------------------ USER OPERATOR -----------------------------------
@@ -165,6 +175,7 @@ public interface PerformanceConstants {
     String TOPIC_OPERATOR_ALICE_BULK_USE_CASE = "aliceBulkUseCase";
     String USER_OPERATOR_ALICE_BULK_USE_CASE = "aliceBulkUseCase";
     String GENERAL_SCALABILITY_USE_CASE = "scalabilityUseCase";
+    String GENERAL_LATENCY_USE_CASE = "latencyUseCase";
     String GENERAL_CAPACITY_USE_CASE = "capacityUseCase";
     String TOPIC_OPERATOR_FIXED_SIZE_OF_EVENTS_USE_CASE = "fixedSizeOfEventsUseCase";
 

@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## 0.50.0
+
+* Nothing here yet, but we will surely develop something new pretty soon 😉
+
 ## 0.49.0
 
-* Add support for Kafka 4.0.1
+* Add support for Kafka 4.0.1 and 4.1.1
 * Set `blockOwnerDeletion` to `true` in the owner references in Strimzi managed resources.
   Deleting the Strimzi custom resources will now by default wait for the deletion of all the owned Kubernetes resources.
 * Introduce the `v1` API to Strimzi CRDs and move User and Topic Operators to use it.
@@ -19,12 +23,16 @@
 * Strimzi Access Operator installation files updated to version 0.2.0
 * New feature gate `UseConnectBuildWithBuildah` (disabled by default) for running the Connect Build feature with Buildah instead of Kaniko on Kubernetes - according to [Strimzi Proposal #114](https://github.com/strimzi/proposals/blob/main/114-use-buildah-instead-of-kaniko.md).
 * New field `spec.version` in the `KafkaConnecter` custom resource, and new `version` fields for each connector under `spec.mirrors[]` in the `KafkaMirrorMaker2` custom resource for configuring the desired version of a connector.
+* New field `.volumeAttributesClass` for `persistent-claim` type Storage in `Kafka` and `KafkaNodePool` custom resource. Enables configuring `VolumeAttributesClass` for `PersistentVolumeClaim`s available since Kubernetes v1.34.
+* Update OAuth library to 0.17.1 to fix `KeycloakAuthorizer` issue on Kafka 4.1.0
 
 ### Major changes, deprecations, and removals
 
 * **This version introduces a new API version to our CRDs.**
   **Before upgrading to Strimzi 0.49 or newer, make sure that you update your `KafkaUser` resources to use the `.spec.authorization.acls[]operations` field instead of the deprecated `.spec.authorization.acls[]operation`.**
   **Especially when using Helm, make sure that the CRDs are updated when you upgrade the operator.**
+* **When rack-awareness is enabled in the `Kafka` custom resource (`.spec.kafka.rack`), Strimzi will not automatically add the best-effort-affinity rules for spreading the Kafka Pods between the zones.**
+  **Please make sure to set your own `topologySpreadConstraint` or `affinity` rules instead.**
 * The `.status.kafkaMetadataState` field in the `Kafka` custom resource is deprecated and not used anymore.
 * The `type: oauth` authentication in Kafka brokers and Kafka clients (Kafka Connect, MirrorMaker 2, and Strimzi HTTP Bridge) has been deprecated.
   Please use the `type: custom` authentication instead.

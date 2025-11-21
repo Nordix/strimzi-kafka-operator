@@ -38,7 +38,7 @@ jobs:
           gpgSigningKey: ${{ secrets.GPG_SIGNING_KEY }}
           artifactoryAccessToken: ${{ secrets.JF_ACCESS_TOKEN }}
 
-#  # Push Java artifacts to GHCR for long-term storage (for CVE rebuilds)
+  # Push Java artifacts to GHCR for long-term storage (for CVE rebuilds)
 #  push-java-artifacts-to-ghcr:
 #    name: Push Java artifacts to GHCR
 #    if: ${{ startsWith(github.ref, 'refs/heads/release-') }}
@@ -48,25 +48,25 @@ jobs:
 #    steps:
 #      - uses: actions/checkout@v5
 #
-#      - name: Setup ORAS
-#        uses: oras-project/setup-oras@v1
+#     - name: Setup ORAS
+#       uses: oras-project/setup-oras@v1
 #
-#      - name: Download strimzi binaries from source build
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: strimzi-binaries.tar
-#          run-id: ${{ inputs.sourceBuildRunId }}
-#          github-token: ${{ github.token }}
+#     - name: Download strimzi binaries from source build
+#       uses: actions/download-artifact@v4
+#       with:
+#         name: strimzi-binaries.tar
+#         run-id: ${{ inputs.sourceBuildRunId }}
+#         github-token: ${{ github.token }}
 #
-#      - name: Login to GHCR
-#        run: echo "${{ github.token }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+#     - name: Login to GHCR
+#       run: echo "${{ github.token }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
 #
-#      - name: Push Java artifacts to GHCR
-#        run: |
-#          oras push ghcr.io/${{ env.REPOSITORY }}/strimzi-binaries:${{ env.TAG }} strimzi-binaries.tar:application/x-tar
-#        env:
-#          TAG: ${{ inputs.releaseVersion }}-${{ inputs.sourceBuildRunId }}
-#          REPOSITORY: "frawless"
+#     - name: Push Java artifacts to GHCR
+#       run: |
+#         oras push ghcr.io/${{ env.REPOSITORY }}/strimzi-binaries:${{ env.TAG }} strimzi-binaries.tar:application/x-tar
+#       env:
+#         TAG: ${{ inputs.releaseVersion }}-${{ inputs.sourceBuildRunId }}
+#         REPOSITORY: "strimzi"
 
   # Push containers with suffix (e.g., 0.49.0-0) - optional step
   push-containers-with-suffix:
@@ -99,10 +99,14 @@ jobs:
     name: Push Containers without suffix (${{ inputs.releaseVersion }})
     needs:
       - push-containers-with-suffix
-#      - push-java-artifacts-to-ghcr
+      # - push-java-artifacts-to-ghcr
+      - prepare-release-artifacts
+
     # Run if push-containers-with-suffix succeeded/skipped and we're on a release branch
     if: |-
       ${{ always() && startsWith(github.ref, 'refs/heads/release-') && 
+        needs.prepare-release-artifacts.result == 'success' &&  
+        needs.push-java-artifacts-to-ghcr.result == 'success' &&
         (needs.push-containers-with-suffix.result == 'success' || 
         needs.push-containers-with-suffix.result == 'skipped') 
       }}
