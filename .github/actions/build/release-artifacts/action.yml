@@ -15,11 +15,8 @@ inputs:
   gpgSigningKey:
     description: "GPG signing key"
     required: true
-  centralUsername:
-    description: "Maven Central username"
-    required: true
-  centralPassword:
-    description: "Maven Central password"
+  artifactoryAccessToken:
+    description: "Artifactory Access Token"
     required: true
 
 runs:
@@ -58,7 +55,7 @@ runs:
       env:
         RELEASE_VERSION: ${{ inputs.releaseVersion }}
 
-    - name: Deploy Java artifacts to Maven Central
+    - name: Deploy Java artifacts to Artifactory
       shell: bash
       run: make pushtocentral
       env:
@@ -66,31 +63,30 @@ runs:
         BRANCH: ${{ github.ref }}
         GPG_PASSPHRASE: ${{ inputs.gpgPassphrase }}
         GPG_SIGNING_KEY: ${{ inputs.gpgSigningKey }}
-        CENTRAL_USERNAME: ${{ inputs.centralUsername }}
-        CENTRAL_PASSWORD: ${{ inputs.centralPassword }}
+        JF_ACCESS_TOKEN: ${{ inputs.artifactoryAccessToken }}
 
     - name: Create release archives
       shell: bash
       run: tar -cvpf release.tar ./*${{ inputs.releaseVersion }}*
 
-    - name: Upload release archives
-      uses: actions/upload-artifact@v4
-      with:
-        name: release.tar
-        path: release.tar
-
-    - name: Build documentation
-      shell: bash
-      run: make docu_html docu_htmlnoheader docu_pdf
-      env:
-        RELEASE_VERSION: ${{ inputs.releaseVersion }}
-
-    - name: Create documentation archive
-      shell: bash
-      run: tar -cvpf documentation.tar ./documentation/html ./documentation/htmlnoheader ./documentation/pdf
-
-    - name: Upload documentation
-      uses: actions/upload-artifact@v4
-      with:
-        name: documentation.tar
-        path: documentation.tar
+#    - name: Upload release archives
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: release.tar
+#        path: release.tar
+#
+#    - name: Build documentation
+#      shell: bash
+#      run: make docu_html docu_htmlnoheader docu_pdf
+#      env:
+#        RELEASE_VERSION: ${{ inputs.releaseVersion }}
+#
+#    - name: Create documentation archive
+#      shell: bash
+#      run: tar -cvpf documentation.tar ./documentation/html ./documentation/htmlnoheader ./documentation/pdf
+#
+#    - name: Upload documentation
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: documentation.tar
+#        path: documentation.tar
