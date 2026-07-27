@@ -19,7 +19,7 @@
         <strimzi-oauth.version>0.17.1</strimzi-oauth.version>
         <strimzi-metrics-reporter.version>0.3.0</strimzi-metrics-reporter.version>
         <prometheus.version>1.3.6</prometheus.version>
-        <cruise-control.version>2.5.146</cruise-control.version>
+        <cruise-control.version>2.5.146-est-1</cruise-control.version>
         <kafka-quotas-plugin.version>0.4.0</kafka-quotas-plugin.version>
         <kafka-kubernetes-config-provider.version>1.2.2</kafka-kubernetes-config-provider.version>
         <opentelemetry.version>1.63.0</opentelemetry.version>
@@ -32,6 +32,17 @@
         <repository>
             <id>cruise-control</id>
             <url>https://linkedin.jfrog.io/artifactory/cruise-control/</url>
+        </repository>
+        <repository>
+            <id>nordix-allies-mvn</id>
+            <name>Nordix Allies Maven</name>
+            <url>https://artifactory.nordix.org/artifactory/allies-mvn</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
