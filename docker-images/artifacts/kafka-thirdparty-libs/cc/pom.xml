@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <cruise-control.version>2.5.146</cruise-control.version>
+        <cruise-control.version>2.5.146-est-1</cruise-control.version>
         <log4j.version>2.17.2</log4j.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
     </properties>
@@ -26,6 +26,17 @@
         <id>cruise-control</id>
           <url>https://linkedin.jfrog.io/artifactory/cruise-control/</url>
       </repository>
+        <repository>
+            <id>nordix-allies-mvn</id>
+            <name>Nordix Allies Maven</name>
+            <url>https://artifactory.nordix.org/artifactory/allies-mvn</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
