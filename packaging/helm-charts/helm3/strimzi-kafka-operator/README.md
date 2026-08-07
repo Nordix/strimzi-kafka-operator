@@ -72,7 +72,7 @@ Strimzi is licensed under the [Apache License, Version 2.0](https://github.com/s
 To install the chart with the release name `my-strimzi-cluster-operator`:
 
 ```bash
-helm install my-strimzi-cluster-operator oci://quay.io/strimzi-helm/strimzi-kafka-operator
+helm install my-strimzi-cluster-operator oci://registry.nordix.org/allies/strimzi-helm/strimzi-kafka-operator
 ```
 
 The command deploys the Strimzi Cluster Operator on the Kubernetes cluster with the default configuration.
@@ -100,9 +100,9 @@ the documentation for more details.
 | `revisionHistoryLimit`                           | Number of replicaSet to keep of the operator deployment                         | 10                           |
 | `watchNamespaces`                                | Comma separated list of additional namespaces for the strimzi-operator to watch | []                           |
 | `watchAnyNamespace`                              | Watch the whole Kubernetes cluster (all namespaces)                             | `false`                      |
-| `defaultImageRegistry`                           | Default image registry for all the images                                       | `quay.io`                    |
-| `defaultImageRepository`                         | Default image registry for all the images                                       | `strimzi`                    |
-| `defaultImageTag`                                | Default image tag for all the images except Kafka Bridge                        | `1.1.0`                     |
+| `defaultImageRegistry`                           | Default image registry for all the images                                       | `registry.nordix.org`        |
+| `defaultImageRepository`                         | Default image registry for all the images                                       | `allies/strimzi`             |
+| `defaultImageTag`                                | Default image tag for all the images except Kafka Bridge                        | `1.1.0-est-1`              |
 | `deploymentAnnotations`                          | Annotations for the operator deployment                                         | `{}`                         |
 | `deploymentLabels`                               | Labels for the operator deployment                                              | `{}`                         |
 | `image.registry`                                 | Override default Cluster Operator image registry                                | `nil`                        |
@@ -162,8 +162,8 @@ the documentation for more details.
 | `kafkaInit.image.name`                           | Init Kafka image name                                                           | `operator`                   |
 | `kafkaInit.image.tag`                            | Override default Init Kafka image tag                                           | `nil`                        |
 | `kafkaInit.image.digest`                         | Override Init Kafka image tag with digest                                       | `nil`                        |
-| `kafkaBridge.image.registry`                     | Override default Kafka Bridge image registry                                    | `quay.io`                    |
-| `kafkaBridge.image.repository`                   | Override default Kafka Bridge image repository                                  | `strimzi`                    |
+| `kafkaBridge.image.registry`                     | Override default Kafka Bridge image registry                                    | `registry.nordix.org`        |
+| `kafkaBridge.image.repository`                   | Override default Kafka Bridge image repository                                  | `allies/strimzi`             |
 | `kafkaBridge.image.name`                         | Kafka Bridge image name                                                         | `kafka-bridge`               |
 | `kafkaBridge.image.tag`                          | Override default Kafka Bridge image tag                                         | `1.0.0`                      |
 | `kafkaBridge.image.digest`                       | Override Kafka Bridge image tag with digest                                     | `nil`                        |
