@@ -146,8 +146,8 @@ kafkaInit:
     tag: ""
 kafkaBridge:
   image:
-    registry: ""
-    repository:
+    registry: "quay.io"
+    repository: "strimzi"
     name: kafka-bridge
     tag: 1.0.0
 kafkaExporter:

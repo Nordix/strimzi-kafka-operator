@@ -162,8 +162,8 @@ the documentation for more details.
 | `kafkaInit.image.name`                           | Init Kafka image name                                                           | `operator`                   |
 | `kafkaInit.image.tag`                            | Override default Init Kafka image tag                                           | `nil`                        |
 | `kafkaInit.image.digest`                         | Override Init Kafka image tag with digest                                       | `nil`                        |
-| `kafkaBridge.image.registry`                     | Override default Kafka Bridge image registry                                    | `registry.nordix.org`        |
-| `kafkaBridge.image.repository`                   | Override default Kafka Bridge image repository                                  | `allies/strimzi`             |
+| `kafkaBridge.image.registry`                     | Override default Kafka Bridge image registry                                    | `quay.io`                    |
+| `kafkaBridge.image.repository`                   | Override default Kafka Bridge image repository                                  | `strimzi`                    |
 | `kafkaBridge.image.name`                         | Kafka Bridge image name                                                         | `kafka-bridge`               |
 | `kafkaBridge.image.tag`                          | Override default Kafka Bridge image tag                                         | `1.0.0`                      |
 | `kafkaBridge.image.digest`                       | Override Kafka Bridge image tag with digest                                     | `nil`                        |
@@ -228,5 +228,5 @@ the documentation for more details.
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-helm install my-strimzi-cluster-operator --set replicas=2 oci://quay.io/strimzi-helm/strimzi-kafka-operator
+helm install my-strimzi-cluster-operator --set replicas=2 oci://registry.nordix.org/allies/strimzi-helm/strimzi-kafka-operator
 ```
