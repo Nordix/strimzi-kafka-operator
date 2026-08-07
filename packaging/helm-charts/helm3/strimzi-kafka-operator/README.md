@@ -72,7 +72,7 @@ Strimzi is licensed under the [Apache License, Version 2.0](https://github.com/s
 To install the chart with the release name `my-strimzi-cluster-operator`:
 
 ```bash
-helm install my-strimzi-cluster-operator oci://quay.io/strimzi-helm/strimzi-kafka-operator
+helm install my-strimzi-cluster-operator oci://registry.nordix.org/allies/strimzi-helm/strimzi-kafka-operator
 ```
 
 The command deploys the Strimzi Cluster Operator on the Kubernetes cluster with the default configuration.
@@ -100,9 +100,9 @@ the documentation for more details.
 | `revisionHistoryLimit`                           | Number of replicaSet to keep of the operator deployment                         | 10                           |
 | `watchNamespaces`                                | Comma separated list of additional namespaces for the strimzi-operator to watch | []                           |
 | `watchAnyNamespace`                              | Watch the whole Kubernetes cluster (all namespaces)                             | `false`                      |
-| `defaultImageRegistry`                           | Default image registry for all the images                                       | `quay.io`                    |
-| `defaultImageRepository`                         | Default image registry for all the images                                       | `strimzi`                    |
-| `defaultImageTag`                                | Default image tag for all the images except Kafka Bridge                        | `1.1.0`                     |
+| `defaultImageRegistry`                           | Default image registry for all the images                                       | `registry.nordix.org`        |
+| `defaultImageRepository`                         | Default image registry for all the images                                       | `allies/strimzi`             |
+| `defaultImageTag`                                | Default image tag for all the images except Kafka Bridge                        | `1.1.0-est-1`              |
 | `deploymentAnnotations`                          | Annotations for the operator deployment                                         | `{}`                         |
 | `deploymentLabels`                               | Labels for the operator deployment                                              | `{}`                         |
 | `image.registry`                                 | Override default Cluster Operator image registry                                | `nil`                        |
@@ -228,5 +228,5 @@ the documentation for more details.
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-helm install my-strimzi-cluster-operator --set replicas=2 oci://quay.io/strimzi-helm/strimzi-kafka-operator
+helm install my-strimzi-cluster-operator --set replicas=2 oci://registry.nordix.org/allies/strimzi-helm/strimzi-kafka-operator
 ```
