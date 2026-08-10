@@ -5,7 +5,7 @@
     <groupId>io.strimzi</groupId>
     <artifactId>strimzi</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.0-est-1</version>
+    <version>1.1.0-est-1-SNAPSHOT</version>
 
     <licenses>
         <license>
