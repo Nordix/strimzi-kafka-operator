@@ -26,8 +26,8 @@ $(JAVA_TARGETS): prerequisites_check $(SUBDIRS)
 release: release_prepare release_version release_helm_version release_maven $(SUBDIRS) release_docu release_single_file release_pkg docu_clean
 
 next_version:
-	echo $(shell echo $(NEXT_VERSION) | tr a-z A-Z) > release.version
-	mvn versions:set -DnewVersion=$(shell echo $(NEXT_VERSION) | tr a-z A-Z)
+	echo $(NEXT_VERSION) > release.version
+	mvn versions:set -DnewVersion=$(NEXT_VERSION)
 	mvn versions:commit
 
 bridge_version:
@@ -66,7 +66,7 @@ release_version:
 
 release_maven:
 	echo "Update pom versions to $(RELEASE_VERSION)"
-	mvn versions:set -DnewVersion=$(shell echo $(RELEASE_VERSION) | tr a-z A-Z)
+	mvn versions:set -DnewVersion=$(RELEASE_VERSION)
 	mvn versions:commit
 
 release_pkg: helm_pkg
